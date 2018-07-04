@@ -1,0 +1,10 @@
+
+State Machine - |game2048|game_state
+Name game_state.game_over game_state.game_move game_state.game_cal game_state.game_keyup game_state.game_keydwon game_state.game_rand game_state.game_init 
+game_state.game_init 0 0 0 0 0 0 0 
+game_state.game_rand 0 0 0 0 0 1 1 
+game_state.game_keydwon 0 0 0 0 1 0 1 
+game_state.game_keyup 0 0 0 1 0 0 1 
+game_state.game_cal 0 0 1 0 0 0 1 
+game_state.game_move 0 1 0 0 0 0 1 
+game_state.game_over 1 0 0 0 0 0 1 
