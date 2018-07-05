@@ -1,7 +1,7 @@
 
 // char bitmap address, size 32*64
-`define		CHAR_WIDETH		5'd31
-`define		CHAR_HEIGHT		6'd63
+`define		CHAR_WIDETH		6'd32
+`define		CHAR_HEIGHT		7'd64
 
 //0-9
 `define		CHAR_0	(10'd64 * 10'd0)
@@ -16,7 +16,7 @@
 `define		CHAR_9	(10'd64 * 10'd9)
 
 //
-`define		CHAR_mh	(10'd64 * 10'd10)		//':'
+`define		CHAR_a	(10'd64 * 10'd10)		//' ' space
 
 
 

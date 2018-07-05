@@ -176,26 +176,22 @@ chrom chrom(
   .q(rom_q) // output [31:0] dout
   );
 
+wire data;
+wire[3:0] i, ii, j, jj;
+wire[13:0] number;
 wire[9:0] posx, posy;
-wire[13:0] grid_b;
 
-wire[3:0] i,j, gi;
-wire grid_c;
+assign ii = x/160;
+assign jj = y/160;
+assign i = ii<4 ? ii : 0;
+assign j = jj<4 ? jj : 0;
+assign posx = 160*i + 32;
+assign posy = 160*j + 32;
+assign number = grid[j*4+i];
 
-block block(clk, rst, rom_address, rom_q, posx, posy, x, y, grid_b, grid_c);
+block block(clk, rst, rom_address, rom_q, posx, posy, x, y, number, data);
 
-assign i = y[9:6];
-assign j = x[9:6];
-assign posx = (j+1)*160;
-assign posy = i*160+35;
-assign gi = i*4+j;
-assign grid_b = grid[gi];
-
-
-localparam 	None_Color = {4'd15, 4'd15, 4'd15}, 
-				Body_Color = {4'd09, 4'd15, 4'd00}, 
-				Brick_Color ={4'd05, 4'd05, 4'd07},  
-				Apple_Color ={4'd15, 4'd00, 4'd00};	
+localparam 	Color = {4'd15, 4'd15, 4'd15};
 		
 // video
 wire valid;
@@ -204,10 +200,10 @@ wire[10:0] h_cnt;
 wire[9:0] v_cnt;
 vga_800_600 video(clk, rst, hsync, vsync, h_cnt, v_cnt, x, y, valid);
 reg[11:0] Pixel_Color;
-// every block size is 160 pixel 
+
 always @(posedge clk)
 	if(valid) begin
-		{vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= grid_c>0 ? Brick_Color :  12'b0;
+		{vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= data>0 ? Color :  12'b0;
 	end 
 	else {vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= 12'b0;
 

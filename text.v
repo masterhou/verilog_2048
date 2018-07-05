@@ -28,7 +28,8 @@ always @(posedge clk or negedge rst)
 			4'd7: rom_adress <= `CHAR_7;
 			4'd8: rom_adress <= `CHAR_8;
 			4'd9: rom_adress <= `CHAR_9;
-			default: ;
+			4'ha: rom_adress <= `CHAR_a;
+			default: rom_adress <= `CHAR_0;
 		endcase
 	end
 	
@@ -42,8 +43,8 @@ always @(posedge clk or negedge rst)
 		x_cnt <= `CHAR_WIDETH;
 
 always @(posedge clk )
-	if( y <`CHAR_HEIGHT) begin
-		rom_adr <= rom_adress + y;
+	if(y >= posy && y < posy + `CHAR_HEIGHT) begin
+		rom_adr <= rom_adress + (y-posy);
 	end
 		
 endmodule
