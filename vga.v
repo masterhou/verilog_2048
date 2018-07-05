@@ -3,7 +3,8 @@ module vga_800_600(
 	output reg hsync, vsync,
 	output reg[10:0] h_cnt,
 	output reg[9:0]  v_cnt,
-	output wire[9:0] pixel_x, pixel_y,
+	output wire[10:0] pixel_x,
+	output wire[ 9:0] pixel_y,
 	output wire valid
 );
 // 800*600@72Hz, Pixel freq = 50.0MHz

@@ -5,16 +5,13 @@ module text (
 	input wire[9:0] posx, posy,
 	input wire[9:0] x, y,
 	input wire[3:0] char,
-	output reg data, 
-	output wire q
+	output reg data
 );
 
 `include "para_define.v"
 
 reg[9:0]	rom_adress;
 reg[4:0] x_cnt;
-
-assign q = x_cnt != `CHAR_WIDETH;
 
 // decode char to rom address
 always @(posedge clk or negedge rst)
@@ -45,8 +42,8 @@ always @(posedge clk or negedge rst)
 		x_cnt <= `CHAR_WIDETH;
 
 always @(posedge clk )
-	if(y >= posy && y < posy + `CHAR_HEIGHT) begin
-		rom_adr <= rom_adress + (y-posy);
+	if( y <`CHAR_HEIGHT) begin
+		rom_adr <= rom_adress + y;
 	end
 		
 endmodule

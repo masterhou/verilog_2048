@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP3C25Q240) Path("C:/Users/Thomas/Documents/2048_fpga/output_files/") File("2048.sof") MfrSpec(OpMask(1));
+		Device PartName(EP3C25Q240) Path("Y:/Dev/verilog_2048/output_files/") File("2048.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

@@ -47,7 +47,8 @@ assign LED[7] = m;
 
 reg[3:0] game_state;
 reg[4:0]	grid_cnt;
-reg	m, q;
+reg	m; // need move 2 times: 1st m=0; 2nd m=1;
+reg	q; // any tile moved, will set 1(true)
 // game state machine
 always @(posedge clk or negedge rst)
 	if(!rst) begin
@@ -145,9 +146,9 @@ always @(posedge clk or negedge rst)
 	else if(game_state == game_over)
 		;
 
-reg[3:0]	a,b,c,d,e;
-reg[2:0]	f,g,h;
-wire[3:0] o1, o2;
+reg[3:0]	a,b,c,d,e; // matrix for index a tile
+reg[2:0]	f,g,h; // loop index 
+wire[3:0] o1, o2; // cal index
 assign o1 = a*(b+f*e  )+c*(d+g);
 assign o2 = a*(b+f*e+e)+c*(d+g);
 
@@ -162,10 +163,9 @@ always @(posedge keydown or negedge rst)
 		Key_Left:	{a,b,c,d,e} <= {-4'd1,4'd4,4'd4,4'd1,-4'd1};
 		Key_Up:		{a,b,c,d,e} <= { 4'd4,4'd0,4'd1,4'd0, 4'd1};
 		Key_Down:	{a,b,c,d,e} <= { 4'd4,4'd3,4'd1,4'd0,-4'd1};
-//		default: 	{a,b,c,d,e} <= { 4'd0,4'd0,4'd0,4'd0, 4'd0};
+		default: 	{a,b,c,d,e} <= { 4'd0,4'd0,4'd0,4'd0, 4'd0};
 		endcase
 		
-// logic
 
 // bmp from rom
 wire[9:0]	rom_address;
@@ -176,42 +176,20 @@ chrom chrom(
   .q(rom_q) // output [31:0] dout
   );
 
-genvar i, j;
-generate
-	for(i=0; i<4; i=i+1)
-	begin:ROW
-		for(j=0; j<4; j=j+1)
-		begin:COL
-			block #((j+1)*160, i*160+35, 4, 160) block(clk, rst, rom_adr[i*4+j], rom_q, x, y, grid[i*4+j], grid_color[i*4+j], qq[i*4+j]);
-		end
-	end
-endgenerate
+wire[9:0] posx, posy;
+wire[13:0] grid_b;
 
-wire[9:0] rom_adr[16];
-assign rom_address = rom_adr[cnt];
+wire[3:0] i,j, gi;
+wire grid_c;
 
-reg[4:0] cnt;
-wire[15:0] qq;
-always @(x) begin
-	case(qq)
-		16'd001: cnt <= 5'd0;
-		16'd002: cnt <= 5'd1; 
-		16'd004: cnt <= 5'd2; 
-		16'd008: cnt <= 5'd3; 
-		16'd016: cnt <= 5'd4; 
-		16'd032: cnt <= 5'd5; 
-		16'd064: cnt <= 5'd6;
-		16'd128: cnt <= 5'd7; 
-		16'd256: cnt <= 5'd8; 
-		16'd512: cnt <= 5'd9;
-		16'd01024: cnt <= 5'd10;
-		16'd02048: cnt <= 5'd11; 
-		16'd04096: cnt <= 5'd12; 
-		16'd08192: cnt <= 5'd13; 
-		16'd16384: cnt <= 5'd14; 
-		16'd32768: cnt <= 5'd15; 
-	endcase
-end
+block block(clk, rst, rom_address, rom_q, posx, posy, x, y, grid_b, grid_c);
+
+assign i = y[9:6];
+assign j = x[9:6];
+assign posx = (j+1)*160;
+assign posy = i*160+35;
+assign gi = i*4+j;
+assign grid_b = grid[gi];
 
 
 localparam 	None_Color = {4'd15, 4'd15, 4'd15}, 
@@ -229,7 +207,7 @@ reg[11:0] Pixel_Color;
 // every block size is 160 pixel 
 always @(posedge clk)
 	if(valid) begin
-		{vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= grid_color>0 ? Brick_Color :  12'b0;
+		{vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= grid_c>0 ? Brick_Color :  12'b0;
 	end 
 	else {vga_r[3:0],vga_g[3:0],vga_b[3:0]} <= 12'b0;
 
