@@ -36,14 +36,19 @@ wire[7:0] randq;
 LFSR8_11D LFSR8_11D(clk, rst, randq);
 
 ///////////////////////////////////
-assign LED[0] = a;
-assign LED[1] = b;
-assign LED[2] = c;
-assign LED[3] = d;
-assign LED[4] = e;
-assign LED[5] = f;
-assign LED[6] = g;
-assign LED[7] = m;
+//assign LED[0] = a;
+//assign LED[1] = b;
+//assign LED[2] = c;
+//assign LED[3] = d;
+//assign LED[4] = e;
+//assign LED[5] = f;
+//assign LED[6] = g;
+//assign LED[7] = m;
+
+assign LED[0] = score[15:12];
+assign LED[1] = score[11:8];
+assign LED[2] = score[ 7:4];
+assign LED[3] = score[ 3:0];
 
 reg[3:0] game_state;
 reg[4:0]	grid_cnt;
@@ -61,6 +66,7 @@ always @(posedge clk or negedge rst)
 			grid_cnt <= grid_cnt + 1'b1;
 		end
 		else begin 
+			score <= 16'd0;
 			grid[randq[4:1]] <= 4'd2;
 			grid_cnt <= 4'd0;
 			game_state <= game_rand;
@@ -88,10 +94,11 @@ always @(posedge clk or negedge rst)
 	else if(game_state == game_cal) begin
 		if(g<4) begin
 			if(f<3) begin
-				if(grid[o1]==grid[o2]) begin
-					grid[o1] <= grid[o1]+grid[o1];
+				if(grid[o1]==grid[o2] & grid[o1]!=0) begin
+					grid[o1] <= grid[o1]*2;
 					grid[o2] <= 0;
-					if(grid[o2]!=0) q <= 1;
+					score <= score + grid[o1]*2;
+					q <= 1;
 					f <= f+2'd2;
 				end
 				else begin
