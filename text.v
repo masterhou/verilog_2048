@@ -14,37 +14,34 @@ reg[9:0]	rom_adress;
 reg[4:0] x_cnt;
 
 // decode char to rom address
-always @(posedge clk or negedge rst)
-	if(!rst) rom_adress <= 10'd0;
-	else begin
-		case(char)
-			4'd0: rom_adress <= `CHAR_0;
-			4'd1: rom_adress <= `CHAR_1;
-			4'd2: rom_adress <= `CHAR_2;
-			4'd3: rom_adress <= `CHAR_3;
-			4'd4: rom_adress <= `CHAR_4;
-			4'd5: rom_adress <= `CHAR_5;
-			4'd6: rom_adress <= `CHAR_6;
-			4'd7: rom_adress <= `CHAR_7;
-			4'd8: rom_adress <= `CHAR_8;
-			4'd9: rom_adress <= `CHAR_9;
-			4'ha: rom_adress <= `CHAR_a;
-			default: rom_adress <= `CHAR_0;
-		endcase
-	end
+always @(posedge clk)
+	case(char)
+		4'd0: rom_adress <= `CHAR_0;
+		4'd1: rom_adress <= `CHAR_1;
+		4'd2: rom_adress <= `CHAR_2;
+		4'd3: rom_adress <= `CHAR_3;
+		4'd4: rom_adress <= `CHAR_4;
+		4'd5: rom_adress <= `CHAR_5;
+		4'd6: rom_adress <= `CHAR_6;
+		4'd7: rom_adress <= `CHAR_7;
+		4'd8: rom_adress <= `CHAR_8;
+		4'd9: rom_adress <= `CHAR_9;
+		default: rom_adress <= `CHAR_a;
+	endcase
 	
-always @(posedge clk or negedge rst)
-	if(!rst) x_cnt <= `CHAR_WIDETH;
-	else if(x >= posx && x < posx + `CHAR_WIDETH) begin
+always @(posedge clk)
+	if(x >= posx && x < posx + `CHAR_WIDETH) begin
 		x_cnt <= x_cnt - 1'b1;
 		data <= rom_data[x_cnt];
 	end
 	else
-		x_cnt <= `CHAR_WIDETH;
+		x_cnt <= `CHAR_WIDETH-1;
 
 always @(posedge clk )
 	if(y >= posy && y < posy + `CHAR_HEIGHT) begin
 		rom_adr <= rom_adress + (y-posy);
 	end
+	else
+		rom_adr <= `CHAR_a;
 		
 endmodule

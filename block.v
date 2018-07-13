@@ -10,14 +10,14 @@ module block #(parameter N=4)
 );
 `include "para_define.v"
 
-wire[3:0] i, ch;
-wire[9:0] poxx, xx;
 reg[3:0] char[4];
 
-assign xx = (x-posx);
-assign i = xx[9:5]<N ? xx[9:5] : 0;
-assign ch = char[i];
-assign poxx = posx + `CHAR_WIDETH*i;
+wire[9:0] xx = (x-posx);
+wire[9:0] xxx= (x-posx)+2;
+wire[3:0] i = xx[9:5]<N ? xx[9:5] : 0;
+wire[3:0] ii=xxx[9:5]<N ?xxx[9:5] : 0;
+wire[3:0] ch = char[ii];
+wire[9:0] poxx = posx + `CHAR_WIDETH*i;
 text text(clk, rst, rom_address, rom_data, poxx, posy, x, y, ch, data);
 
 always @(posedge clk)
@@ -36,7 +36,7 @@ always @(posedge clk)
 		2048:	{char[0],char[1],char[2],char[3]}<={4'h2,4'h0,4'h4,4'h8};
 		4096:	{char[0],char[1],char[2],char[3]}<={4'h4,4'h0,4'h9,4'h6};
 		8192:	{char[0],char[1],char[2],char[3]}<={4'h8,4'h1,4'h9,4'h2};
-		default: ;
+		default: {char[0],char[1],char[2],char[3]}<={4'ha,4'ha,4'ha,4'ha};
 	endcase
 
 endmodule
