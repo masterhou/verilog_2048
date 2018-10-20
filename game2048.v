@@ -25,7 +25,7 @@ reg[15:0]  score;
 
 wire[3:0] code;
 wire keydown, scan_clk;
-keypad4x4 key(clk, rst, row, col, code, keydown, scan_clk);
+keypad4x4 u_key(clk, rst, row, col, code, keydown, scan_clk);
 
 wire[3:0] LED[7:0];
 led8 led(scan_clk, rst, LED[0], LED[1], LED[2], LED[3], LED[4], LED[5], LED[6], LED[7], LEDOut, DigitSelect);
@@ -153,24 +153,46 @@ always @(posedge clk or negedge rst)
 	else if(game_state == game_over)
 		;
 
-reg[3:0]	a,b,c,d,e; // matrix for index a tile
 reg[2:0]	f,g,h; // loop index 
 wire[3:0] o1, o2; // cal index
-assign o1 = a*(b+f*e  )+c*(d+g);
-assign o2 = a*(b+f*e+e)+c*(d+g);
 
+wire[3:0] down1 = 12-4*f+g;
+wire[3:0] down2 = 08-4*f+g;
+
+wire[3:0] up1 = 0+4*f+g;
+wire[3:0] up2 = 4+4*f+g;
+
+wire[3:0] left1 = 0+4*g+f;
+wire[3:0] left2 = 1+4*g+f;
+
+wire[3:0] righ1 = 3+4*g-f;
+wire[3:0] righ2 = 2+4*g-f;
+
+reg[2:0]	key;
 // keyboard
+assign o1 = 
+			key==0 ? righ1 :
+			key==1 ? left1 :
+			key==2 ? up1   :
+			key==3 ? down1 : 0;
+
+assign o2 = 
+			key==0 ? righ2 :
+			key==1 ? left2 :
+			key==2 ? up2   :
+			key==3 ? down2 : 0;
+			
 always @(posedge keydown or negedge rst)
 	if(!rst)
-		{a,b,c,d,e} <= {4'd0,4'd0,4'd0,4'd0,4'd0};
+		key <= 4;
 	else
 	if(keydown)
 		case(code)
-		Key_Right:	{a,b,c,d,e} <= {-4'd1,4'd1,4'd4,4'd1, 4'd1};
-		Key_Left:	{a,b,c,d,e} <= {-4'd1,4'd4,4'd4,4'd1,-4'd1};
-		Key_Up:		{a,b,c,d,e} <= { 4'd4,4'd0,4'd1,4'd0, 4'd1};
-		Key_Down:	{a,b,c,d,e} <= { 4'd4,4'd3,4'd1,4'd0,-4'd1};
-		default: 	{a,b,c,d,e} <= { 4'd0,4'd0,4'd0,4'd0, 4'd0};
+		Key_Right:	key <= 0;
+		Key_Left:	key <= 1;
+		Key_Up:		key <= 2;
+		Key_Down:	key <= 3;
+		default: 	key <= 4;
 		endcase
 		
 
